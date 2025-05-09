@@ -3,7 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import queue
 import requests
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
 
+app = FastAPI()
 # 파라미터
 samplerate = 22100   # 샘플링 레이트
 duration   = 5       # 윈도우 길이 (초)
@@ -13,6 +16,10 @@ low_f, high_f = 80, 160  # 관심 대역 (Hz)
 sound_detect_queue = queue.Queue()
 
 def detect_sound():
+    samplerate = 22100   # 샘플링 레이트
+    duration   = 5       # 윈도우 길이 (초)
+    threshold  = 60     # Alert 임계 진폭
+    low_f, high_f = 80, 160  # 관심 대역 (Hz)
     # 1) 녹음
     print(f"\n▶ 다음 {duration}초간 녹음합니다...")
     recording = sd.rec(int(samplerate*duration),
@@ -43,10 +50,12 @@ def detect_sound():
     # 5) Alert 여부
     if max_amp > threshold:
         print(f"🚨 Alert! {max_freq:.1f} Hz 대역에서 진폭 {max_amp:.1f} 감지 (임계치={threshold})")
-        sound_detect_queue.put_nowait("1")
+        #sound_detect_queue.put_nowait("1")
+        return "detected"
 
     else:
         print(f"정상: {low_f}–{high_f} Hz 구간 최대 진폭 {max_amp:.1f}")
+        return "none"
 
     # (원하면 여기서 플롯을 띄울 수도 있지만, 루프가 중단될 때까지 계속 기록만 합니다.)
     print("end")
@@ -84,7 +93,7 @@ if __name__ == "__main__":
             # 5) Alert 여부
             if max_amp > threshold:
                 #sound_detect_queue.put_nowait("1")
-                requests.get("http://localhost:8000/sound_detect")
+                requests.get("http://localhost:8080/sound_detect")
                 print(f"🚨 Alert! {max_freq:.1f} Hz 대역에서 진폭 {max_amp:.1f} 감지 (임계치={threshold})")
             else:
                 print(f"정상: {low_f}–{high_f} Hz 구간 최대 진폭 {max_amp:.1f}")

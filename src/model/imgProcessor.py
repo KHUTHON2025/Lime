@@ -2,7 +2,6 @@ import cv2, threading, time, queue
 import numpy as np
 import asyncio
 
-
 # 1) 전역 카메라 + 프레임 버퍼
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
@@ -13,8 +12,9 @@ frame_lock = threading.Lock()
 
 #이미지 감지시 /detect 경로로 detect를 보낸다
 detect_queue = queue.Queue()
+undetect_queue = queue.Queue()
 
-active_until = time.time() + 300  # 5초 후에 비활성화
+active_until = time.time() + 3000  # 5초 후에 비활성화
 
 def capture_loop():
     global latest_frame
@@ -31,7 +31,7 @@ def capture_loop():
 
 # 백그라운드 스레드로 시작
 threading.Thread(target=capture_loop, daemon=True).start()
-
+active = 100
 def gen_frames():
     """
     전역 latest_frame을 읽어서
@@ -39,6 +39,11 @@ def gen_frames():
     """
     from ultralytics import YOLO
     model = YOLO('./model/yolov8s3/weights/best.pt')
+
+    curr = active
+    #TEST
+    print("init",curr)
+
     # loop = asyncio.get_event_loop()
     # msg = await loop.run_in_executor(None, detect_queue.get)
     # print("ㅃㅐㄹㄲㅏ?)")
@@ -84,13 +89,15 @@ def gen_frames():
         res = model(frame, conf=0.25, verbose=False)[0]
         clses = res.boxes.cls  # (N,) 텐서: class index
         conf = res.boxes.conf
-        if len(clses) > 0 and conf[0] > 0.5:
+        print("app.state.test", curr)
+        if len(clses) > 0 and conf[0] > 0.5:  #and curr > 0:
             try:
                 print("detect")
                 detect_queue.put_nowait("Detected")
             except:
                 pass
-            
+        detect_queue.put_nowait("none")
+        undetect_queue.put_nowait("none")
         annotated = res.plot()
 
         # 3) JPEG로 인코딩

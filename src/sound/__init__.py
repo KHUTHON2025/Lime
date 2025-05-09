@@ -1,1 +1,1 @@
-from .sound import detect_sound, sound_detect_queue
+from .sound import detect_sound
