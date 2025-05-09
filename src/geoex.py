@@ -18,9 +18,9 @@ def get_location_by_wifi(api_key):
     return latitude, longitude
 latitude = 0
 longitude = 0
-kakao_api_key ="64ce3d1a6a44c275c55ba617749bf850"
+kakao_api_key =""
 
-google_api_key = "AIzaSyBEmcsvK5exQ4KAxVJHLj0ENgLS20s9OO0"
+google_api_key = ""
 latitude, longitude = get_location_by_wifi(google_api_key)
 #print(f"위도: {latitude}, 경도: {longitude}")
 def get_address_from_coordinates(lat, lon, kakao_api_key):
