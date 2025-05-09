@@ -1,6 +1,8 @@
 from typing import Union
 from fastapi import FastAPI
 
+import firebase
+
 app = FastAPI()
 
 
