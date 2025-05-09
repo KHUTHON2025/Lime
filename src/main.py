@@ -1,10 +1,7 @@
 from typing import Union
-
 from fastapi import FastAPI
-import firebase_admin
 
 app = FastAPI()
-default_app = firebase_admin.initialize_app()
 
 
 @app.get("/")
