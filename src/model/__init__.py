@@ -1,1 +1,1 @@
-from .imgProcessor import gen_frames
+from .imgProcessor import gen_frames, detect_queue
