@@ -2,18 +2,20 @@ from typing import Union
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from model import gen_frames, detect_queue
+from geoex import get_address_by_id
 import asyncio
+import uuid
 #import firebase
 
 app = FastAPI()
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def read_root(q: Union[str, None] = None):
+    return {"status": "success"}
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/hive/{id}")
+def read_item(id: int):
+    return {"hive_id": id, "address":get_address_by_id(id), "live_url": f"https://calf-exact-anteater.ngrok-free.app/video_feed?={uuid.uuid4()}"}
 
 @app.get("/video_feed")
 def video_feed():
