@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from model import gen_frames
 
+import firebase
+
 app = FastAPI()
 
 
