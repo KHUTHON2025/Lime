@@ -1,5 +1,8 @@
+import os
 import firebase_admin
 from firebase_admin import credentials
 
-cred = credentials.Certificate("path/to/serviceAccountKey.json")
+service_key_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+
+cred = credentials.Certificate(service_key_path)
 firebase_admin.initialize_app(cred)
